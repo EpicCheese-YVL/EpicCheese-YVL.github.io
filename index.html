@@ -1,54 +1,355 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
+  <meta charset="UTF-8">
   <title>Our Quotes</title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.1">
-
-  <style type="text/css">
-    span.s1 {font-kerning: none}
-    span.s2 {font: 24.0px 'Apple Color Emoji'; font-kerning: none}
-
-    /* ✨ Added button styling */
-    button {
-      background-color: #007acc;
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --primary: #007acc;
+      --primary-dark: #005fa3;
+      --background: #f4f6f8;
+      --card-bg: #fff;
+      --text: #1a1a1a;
+      --danger: #e53935;
+      --border-radius: 12px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.09);
+      --transition: 0.23s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="dark"] {
+      --background: #222e36;
+      --card-bg: #273746;
+      --text: #f4f6f8;
+      --shadow: 0 4px 20px rgba(0,0,0,0.18);
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: var(--background);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      transition: background var(--transition), color var(--transition);
+    }
+    .container {
+      max-width: 680px;
+      margin: 36px auto 0 auto;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 32px 20px 22px 20px;
+      min-height: 420px;
+      transition: background var(--transition), color var(--transition);
+      position: relative;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .dark-toggle {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: var(--primary);
+      transition: color var(--transition);
+    }
+    .tabs {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      font-size: 1.08em;
+      font-weight: 600;
+      color: var(--primary);
+      padding: 7px 24px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    .quotes-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .quote-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      padding: 22px 18px 14px 18px;
+      font-size: 1.08em;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.27s, transform 0.27s;
+      position: relative;
+      will-change: opacity, transform;
+    }
+    .quote-card.hide {
+      opacity: 0;
+      transform: translateY(30px) scale(0.98);
+      pointer-events: none;
+    }
+    .quote-text {
+      font-size: 1.2em;
+      line-height: 1.5;
+    }
+    .quote-meta {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      font-size: 0.98em;
+      color: #6a7a88;
+      margin-top: 2px;
+    }
+    .quote-author {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .quote-actions {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-left: 12px;
+    }
+    .delete-btn {
+      border: none;
+      cursor: pointer;
+      background: none;
+      font-size: 1.15em;
+      color: var(--danger);
+      transition: color var(--transition), transform var(--transition);
+      outline: none;
+      padding: 0 3px;
+    }
+    .delete-btn:hover {
+      color: #b71c1c;
+      transform: scale(1.15);
+    }
+    .add-quote-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      background: var(--background);
+      border-radius: var(--border-radius);
+      padding: 18px 18px 12px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .add-quote-form input, .add-quote-form textarea {
+      font-size: 1em;
+      padding: 10px;
+      border: 1.5px solid #c7d4e0;
+      border-radius: 6px;
+      background: #f5faff;
+      font-family: inherit;
+      resize: none;
+      transition: border-color 0.2s;
+    }
+    [data-theme="dark"] .add-quote-form input, [data-theme="dark"] .add-quote-form textarea {
+      background: #273746;
+      color: #f4f6f8;
+      border-color: #404d5a;
+    }
+    .add-quote-form input:focus, .add-quote-form textarea:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    .add-quote-form button {
+      background: var(--primary);
       color: white;
       border: none;
-      padding: 10px 20px;
-      font-size: 16px;
       border-radius: 8px;
+      padding: 11px 0;
+      font-size: 1.09em;
       cursor: pointer;
-      margin: 10px;
+      transition: background var(--transition);
+      font-weight: 600;
+      letter-spacing: 0.01em;
     }
-    button:hover {
-      background-color: #005fa3;
+    .add-quote-form button:hover {
+      background: var(--primary-dark);
     }
-
-    body {
-      text-align: center;
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container { padding: 15px 1vw 8px 1vw; }
+      .add-quote-form {
+        padding: 9px 2vw 8px 2vw;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="container" id="mainContainer">
+    <button class="dark-toggle" id="darkToggle" title="Toggle dark mode">🌙</button>
+    <header>
+      <h1>Our Quotes Board <span style="font-size:1.1em;"></span></h1>
+      <div style="font-size:1.1em; color:#6a7a88;">do whatever u want lol</div>
+    </header>
+    <nav class="tabs">
+      <button class="tab-btn active" id="tabView" type="button">View Quotes</button>
+      <button class="tab-btn" id="tabAdd" type="button">Add Quote</button>
+    </nav>
+    <section id="quotesSection">
+      <ul class="quotes-list" id="quotesList"></ul>
+      <div id="noQuotes" style="text-align:center; color:#999; margin-top:40px; display:none;">No quotes yet. Add one!</div>
+    </section>
+    <section id="addSection" style="display:none;">
+      <form class="add-quote-form" id="quoteForm" autocomplete="off">
+        <textarea id="quoteInput" placeholder="Type your quote..." required rows="2" maxlength="180"></textarea>
+        <input id="authorInput" type="text" placeholder="Your name (optional)" maxlength="30">
+        <button type="submit">Add Quote</button>
+      </form>
+    </section>
+  </div>
 
-<h1><span class="s1"><b>Hello, These are our quotes lolll! </b></span><span class="s2">👋</span></h1>
-<h1><span class="s1">I like bread </span><span class="s2">🍞</span><span class="s1"> - Aimee</span></h1>
-<h1><span class="s1">You'll never know - Aimee</span></h1>
-<h1><span class="s1">Poori+ketchup+sabji is the best - Tanay</span></h1>
-<h1><span class="s1">Life is hard; it's harder if you're stupid - Kaya</span></h1>
-<h1><span class="s1">If someone is being rude to you don’t waste time just hit them with a right hook on the jaw - Shiv</span></h1>
-<h1><span class="s1">THEY SAY MORE MONEY MORE PROBLEMS: BRING ON THE PROBLEMS - Jofton</span></h1>
+  <script>
+    // ----------- Data Layer (localStorage) -----------
+    function getQuotes() {
+      return JSON.parse(localStorage.getItem('quotesEpic')) || [
+        { text: "I like bread", author: "Aimee", id: 1 },
+        { text: "You'll never know", author: "Aimee", id: 2 },
+        { text: "Poori+ketchup+sabji is the best", author: "Tanay", id: 3 },
+        { text: "Life is hard; it's harder if you're stupid", author: "Kaya", id: 4 },
+        { text: "If someone is being rude to you don’t waste time just hit them with a right hook on the jaw", author: "Shiv", id: 5 },
+        { text: "THEY SAY MORE MONEY MORE PROBLEMS: BRING ON THE PROBLEMS", author: "Jofton", id: 6 }
+      ];
+    }
+    function saveQuotes(quotes) {
+      localStorage.setItem('quotesEpic', JSON.stringify(quotes));
+    }
+    // ----------- UI & Interactivity -----------
+    const quotesList = document.getElementById('quotesList');
+    const noQuotes = document.getElementById('noQuotes');
+    const quoteForm = document.getElementById('quoteForm');
+    const quoteInput = document.getElementById('quoteInput');
+    const authorInput = document.getElementById('authorInput');
+    let quotes = getQuotes();
 
-<!-- ✨ Added Buttons -->
-<button onclick="alert('WHY DID YOU CLICK IT')">
-  Don't click me!
-</button>
+    // User can delete quotes they added in this session (simple demo logic)
+    function canDelete(q) {
+      let userAdded = JSON.parse(sessionStorage.getItem('userQuotesEpic')) || [];
+      return userAdded.includes(q.id);
+    }
 
-<button onclick="location.reload()">
-  Refresh Page
-</button>
-
+    function renderQuotes() {
+      quotesList.innerHTML = '';
+      if (quotes.length === 0) {
+        noQuotes.style.display = '';
+        return;
+      }
+      noQuotes.style.display = 'none';
+      quotes.slice().reverse().forEach(q => {
+        const li = document.createElement('li');
+        li.className = 'quote-card';
+        li.dataset.id = q.id;
+        li.innerHTML = `
+          <div class="quote-text">${escapeHtml(q.text)}</div>
+          <div class="quote-meta">
+            <span class="quote-author">- ${q.author ? escapeHtml(q.author) : "Anonymous"}</span>
+            <div class="quote-actions">
+              ${canDelete(q) ? `<button class="delete-btn" title="Delete this quote" aria-label="Delete">🗑️</button>` : ''}
+            </div>
+          </div>
+        `;
+        quotesList.appendChild(li);
+        // Animation
+        setTimeout(() => li.classList.remove('hide'), 10);
+      });
+    }
+    // Escape HTML for safe rendering
+    function escapeHtml(str) {
+      return str.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    // Add quote
+    quoteForm.onsubmit = function(e) {
+      e.preventDefault();
+      const text = quoteInput.value.trim();
+      if (!text) return;
+      const author = authorInput.value.trim();
+      const id = Date.now();
+      const newQuote = { text, author, id };
+      quotes.push(newQuote);
+      saveQuotes(quotes);
+      // Track that this quote can be deleted by this user
+      let userAdded = JSON.parse(sessionStorage.getItem('userQuotesEpic')) || [];
+      userAdded.push(id);
+      sessionStorage.setItem('userQuotesEpic', JSON.stringify(userAdded));
+      quoteInput.value = '';
+      authorInput.value = '';
+      switchTab('view');
+      renderQuotes();
+    };
+    // Delete actions
+    quotesList.onclick = function(e) {
+      const card = e.target.closest('.quote-card');
+      if (!card) return;
+      const id = Number(card.dataset.id);
+      if (e.target.classList.contains('delete-btn')) {
+        if (confirm("Delete this quote?")) {
+          quotes = quotes.filter(q => q.id !== id);
+          saveQuotes(quotes);
+          // Remove from userAdded session
+          let userAdded = JSON.parse(sessionStorage.getItem('userQuotesEpic')) || [];
+          userAdded = userAdded.filter(qid => qid !== id);
+          sessionStorage.setItem('userQuotesEpic', JSON.stringify(userAdded));
+          renderQuotes();
+        }
+      }
+    };
+    // Tabs logic
+    function switchTab(tab) {
+      document.getElementById('tabView').classList.remove('active');
+      document.getElementById('tabAdd').classList.remove('active');
+      document.getElementById('quotesSection').style.display = 'none';
+      document.getElementById('addSection').style.display = 'none';
+      if (tab === 'view') {
+        document.getElementById('tabView').classList.add('active');
+        document.getElementById('quotesSection').style.display = '';
+      } else {
+        document.getElementById('tabAdd').classList.add('active');
+        document.getElementById('addSection').style.display = '';
+        quoteInput.focus();
+      }
+    }
+    document.getElementById('tabView').onclick = () => switchTab('view');
+    document.getElementById('tabAdd').onclick = () => switchTab('add');
+    // Dark mode toggle
+    const darkToggle = document.getElementById('darkToggle');
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('themeEpic', theme);
+      darkToggle.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+    }
+    darkToggle.onclick = () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      setTheme(current === 'light' ? 'dark' : 'light');
+    };
+    // On load
+    (function(){
+      // Theme
+      const theme = localStorage.getItem('themeEpic') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      setTheme(theme);
+      // Render
+      renderQuotes();
+    })();
+  </script>
 </body>
 </html>
