@@ -605,11 +605,7 @@
     // Start the MutationObserver-driven interval if Halloween is already on
     if (document.documentElement.getAttribute('data-halloween') === 'on') startHHInterval();
 
-    // Accessibility: keyboard shortcut H toggles Halloween, D toggles dark mode
-    document.addEventListener('keydown', (e) => {
-      if (e.key.toLowerCase() === 'h' && !e.metaKey && !e.ctrlKey) hhToggle.click();
-      if (e.key.toLowerCase() === 'd' && !e.metaKey && !e.ctrlKey) darkToggle.click();
-    });
+    
   </script>
 </body>
 </html>
