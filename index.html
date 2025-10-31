@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>goofy jump game</title>
+    <title>Star Jumper</title>
     <style>
         * {
             margin: 0;
@@ -184,22 +184,129 @@
             transform: translateY(0);
         }
 
+        .mobile-controls {
+            display: none;
+            margin-top: 1rem;
+            gap: 1rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .control-btn {
+            width: 80px;
+            height: 80px;
+            background: rgba(59, 130, 246, 0.3);
+            border: 3px solid #3b82f6;
+            border-radius: 1rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .control-btn:active {
+            background: rgba(59, 130, 246, 0.6);
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(59, 130, 246, 0.5);
+        }
+
+        .control-btn.jump-btn {
+            width: 100px;
+            height: 100px;
+            background: rgba(139, 92, 246, 0.3);
+            border-color: #8b5cf6;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        .control-btn.jump-btn:active {
+            background: rgba(139, 92, 246, 0.6);
+            box-shadow: 0 2px 5px rgba(139, 92, 246, 0.5);
+        }
+
         @media (max-width: 900px) {
             body {
                 padding: 1rem;
             }
             
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.75rem;
             }
             
             .header p {
-                font-size: 0.875rem;
+                font-size: 0.75rem;
             }
 
             .stats-bar {
                 gap: 1rem;
                 padding: 0.75rem 1rem;
+            }
+
+            #gameCanvas {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .mobile-controls {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .control-btn {
+                width: 70px;
+                height: 70px;
+            }
+
+            .control-btn.jump-btn {
+                width: 90px;
+                height: 90px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-bar {
+                gap: 0.75rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+
+            .control-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.25rem;
+            }
+
+            .control-btn.jump-btn {
+                width: 80px;
+                height: 80px;
             }
         }
     </style>
@@ -207,8 +314,11 @@
 <body>
     <div class="game-container">
         <div class="header">
-            <h1>Star Jumper(Idk what to call this lol)</h1>
-            <p>WASD to move(game created and updated by Veer)</p>
+            <h1>Star Jumper(Massive update on 2nd Nov!!!)
+</h1>
+            <p>WASD to move(game created and updated by Veer)
+
+</p>
         </div>
         
         <div class="stats-bar">
@@ -227,13 +337,23 @@
             
             <div id="wonScreen" class="overlay hidden">
                 <div class="overlay-content">
-                    <h2 class="won-title">u won!</h2>
-                    <p class="won-text">more coming soon if u have suggestions contact me lol</p>
+                    <h2 class="won-title">You won</h2>
+                    <p class="won-text">more coming soon if u have suggestions contact me lol
+
+</p>
                     <div class="final-stats">
                         <p><strong>Total Coins Collected:</strong> <span id="finalCoins">0</span></p>
                     </div>
                     <button id="playAgainBtn" class="game-button">Play Again</button>
                 </div>
+            </div>
+        </div>
+
+        <div class="mobile-controls">
+            <div class="control-row">
+                <button class="control-btn" id="leftBtn">←</button>
+                <button class="control-btn jump-btn" id="jumpBtn">↑</button>
+                <button class="control-btn" id="rightBtn">→</button>
             </div>
         </div>
     </div>
@@ -1250,6 +1370,61 @@
         });
 
         playAgainBtn.addEventListener('click', restartGame);
+
+        // Mobile touch controls
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        const jumpBtn = document.getElementById('jumpBtn');
+
+        // Prevent default touch behaviors
+        [leftBtn, rightBtn, jumpBtn].forEach(btn => {
+            btn.addEventListener('touchstart', (e) => e.preventDefault());
+            btn.addEventListener('touchend', (e) => e.preventDefault());
+        });
+
+        // Left button
+        leftBtn.addEventListener('touchstart', () => {
+            keysPressed.add('arrowleft');
+        });
+        leftBtn.addEventListener('touchend', () => {
+            keysPressed.delete('arrowleft');
+        });
+
+        // Right button
+        rightBtn.addEventListener('touchstart', () => {
+            keysPressed.add('arrowright');
+        });
+        rightBtn.addEventListener('touchend', () => {
+            keysPressed.delete('arrowright');
+        });
+
+        // Jump button
+        jumpBtn.addEventListener('touchstart', () => {
+            keysPressed.add(' ');
+        });
+        jumpBtn.addEventListener('touchend', () => {
+            keysPressed.delete(' ');
+            keysPressed.delete('jumpHeld');
+        });
+
+        // Also support mouse for testing on desktop
+        leftBtn.addEventListener('mousedown', () => keysPressed.add('arrowleft'));
+        leftBtn.addEventListener('mouseup', () => keysPressed.delete('arrowleft'));
+        leftBtn.addEventListener('mouseleave', () => keysPressed.delete('arrowleft'));
+
+        rightBtn.addEventListener('mousedown', () => keysPressed.add('arrowright'));
+        rightBtn.addEventListener('mouseup', () => keysPressed.delete('arrowright'));
+        rightBtn.addEventListener('mouseleave', () => keysPressed.delete('arrowright'));
+
+        jumpBtn.addEventListener('mousedown', () => keysPressed.add(' '));
+        jumpBtn.addEventListener('mouseup', () => {
+            keysPressed.delete(' ');
+            keysPressed.delete('jumpHeld');
+        });
+        jumpBtn.addEventListener('mouseleave', () => {
+            keysPressed.delete(' ');
+            keysPressed.delete('jumpHeld');
+        });
 
         // Initialize
         createStars();
