@@ -10,11 +10,12 @@
     margin: 0;
     background: #000;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: Arial, sans-serif;
   }
-  .play-btn {
+  .btn {
     padding: 1.5rem 3rem;
     font-size: 2rem;
     color: #fff;
@@ -22,13 +23,14 @@
     border: 2px solid #fff;
     cursor: pointer;
     border-radius: 8px;
+    margin: 10px;
     transition: all 0.3s ease;
   }
-  .play-btn:hover {
+  .btn:hover {
     background: #fff;
     color: #000;
   }
-  /* Keep iframe effectively hidden but still playable */
+  /* Keep iframe off-screen but playable */
   #ytPlayer {
     position: absolute;
     left: -9999px;
@@ -37,32 +39,53 @@
 </head>
 <body>
 
-<button class="play-btn" id="playBtn">PLAY</button>
+<button class="btn" id="playBtn">PLAY</button>
+<button class="btn" id="pauseBtn">PAUSE</button>
 
-<iframe id="ytPlayer" width="560" height="315" src="" allow="autoplay; encrypted-media"></iframe>
+<iframe id="ytPlayer" width="560" height="315" allow="autoplay; encrypted-media"></iframe>
 
 <script>
 const links = [
-  "https://www.youtube.com/embed/ynecLJYrZaA?autoplay=1",
-  "https://www.youtube.com/embed/Q_ad3KnUDvM?autoplay=1",
-  "https://www.youtube.com/embed/wQZvS109Q00?autoplay=1",
-  "https://www.youtube.com/embed/QTLqujvTGrg?autoplay=1",
-  "https://www.youtube.com/embed/JRK_in-dkRY?autoplay=1",
-  "https://www.youtube.com/embed/6jRQTj_k-1Q?autoplay=1",
-  "https://www.youtube.com/embed/RLYksQvr5zY?autoplay=1",
-  "https://www.youtube.com/embed/F6iYcXynA4s?autoplay=1",
-  "https://www.youtube.com/embed/VcRc2DHHhoM?autoplay=1",
-  "https://www.youtube.com/embed/GYE9H4SMq5E?autoplay=1"
+  "https://www.youtube.com/embed/Av4AsFPeQ9E?enablejsapi=1",
+  "https://www.youtube.com/embed/Q_ad3KnUDvM?enablejsapi=1",
+  "https://www.youtube.com/embed/eO818K0C14A?enablejsapi=1",
+  "https://www.youtube.com/embed/R2-yomhYAj4?enablejsapi=1",
+  "https://www.youtube.com/embed/JRK_in-dkRY?enablejsapi=1",
+  "https://www.youtube.com/embed/bYg6aMDQ_TA?enablejsapi=1",
+  "https://www.youtube.com/embed/4H7ZJQPPThY?enablejsapi=1",
+  "https://www.youtube.com/embed/42wfEs7oIP8?enablejsapi=1",
+  "https://www.youtube.com/embed/_VRyoaNF9sk?enablejsapi=1",
+  "https://www.youtube.com/embed/GYE9H4SMq5E?enablejsapi=1"
 ];
 
-// Pick a random video on page load
+// Random video index on load
 const randomIndex = Math.floor(Math.random() * links.length);
 
+const player = document.getElementById("ytPlayer");
 const playBtn = document.getElementById("playBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+
+let isPlaying = false;
+
+// Load the random video initially
+player.src = links[randomIndex];
+
+// PLAY / RESUME button
 playBtn.addEventListener("click", () => {
-  playBtn.disabled = true;                  // disable button
-  playBtn.innerText = "PLAYING...";         // update button text
-  document.getElementById("ytPlayer").src = links[randomIndex]; // play random video
+  if (!isPlaying) {
+    player.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+    isPlaying = true;
+    playBtn.innerText = "RESUME";
+  } else {
+    player.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  }
+});
+
+// PAUSE button
+pauseBtn.addEventListener("click", () => {
+  if (isPlaying) {
+    player.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  }
 });
 </script>
 
