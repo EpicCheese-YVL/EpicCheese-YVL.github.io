@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>kabeer goofy</title>
+<title>Carti Random Player</title>
 <style>
   html, body {
     height: 100%;
@@ -28,36 +28,41 @@
     background: #fff;
     color: #000;
   }
+  /* Keep iframe effectively hidden but still playable */
+  #ytPlayer {
+    position: absolute;
+    left: -9999px;
+  }
 </style>
 </head>
 <body>
 
 <button class="play-btn" id="playBtn">PLAY</button>
 
-<iframe id="ytPlayer" width="0" height="0" src="" allow="autoplay"></iframe>
+<iframe id="ytPlayer" width="560" height="315" src="" allow="autoplay; encrypted-media"></iframe>
 
 <script>
 const links = [
   "https://www.youtube.com/embed/ynecLJYrZaA?autoplay=1",
-  "https://www.youtube.com/embed/YG3EhWlBaoI?autoplay=1",
-  "https://www.youtube.com/embed/ftaXMKV3ffE?autoplay=1",
-  "https://www.youtube.com/embed/VcRc2DHHhoM?autoplay=1",
-  "https://www.youtube.com/embed/F6iYcXynA4s?autoplay=1",
-  "https://www.youtube.com/embed/RLYksQvr5zY?autoplay=1",
+  "https://www.youtube.com/embed/Q_ad3KnUDvM?autoplay=1",
+  "https://www.youtube.com/embed/wQZvS109Q00?autoplay=1",
+  "https://www.youtube.com/embed/QTLqujvTGrg?autoplay=1",
   "https://www.youtube.com/embed/JRK_in-dkRY?autoplay=1",
   "https://www.youtube.com/embed/6jRQTj_k-1Q?autoplay=1",
-  "https://www.youtube.com/embed/QTLqujvTGrg?autoplay=1",
-  "https://www.youtube.com/embed/Q_ad3KnUDvM?autoplay=1"
+  "https://www.youtube.com/embed/RLYksQvr5zY?autoplay=1",
+  "https://www.youtube.com/embed/F6iYcXynA4s?autoplay=1",
+  "https://www.youtube.com/embed/VcRc2DHHhoM?autoplay=1",
+  "https://www.youtube.com/embed/GYE9H4SMq5E?autoplay=1"
 ];
 
-// pick a random video on page load
+// Pick a random video on page load
 const randomIndex = Math.floor(Math.random() * links.length);
 
 const playBtn = document.getElementById("playBtn");
 playBtn.addEventListener("click", () => {
-  playBtn.disabled = true; // disable button so user can't click again
-  playBtn.innerText = "PLAYING...";
-  document.getElementById("ytPlayer").src = links[randomIndex];
+  playBtn.disabled = true;                  // disable button
+  playBtn.innerText = "PLAYING...";         // update button text
+  document.getElementById("ytPlayer").src = links[randomIndex]; // play random video
 });
 </script>
 
