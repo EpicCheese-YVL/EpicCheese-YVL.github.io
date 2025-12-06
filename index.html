@@ -1,40 +1,65 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>kabeer goofy</title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.1">
-
-  <style type="text/css">
-    span.s1 {font-kerning: none}
-    span.s2 {font: 24.0px 'Apple Color Emoji'; font-kerning: none}
-
-    /* ✨ Added button styling */
-    button {
-      background-color: #007acc;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin: 10px;
-    }
-    button:hover {
-      background-color: #005fa3;
-    }
-
-    body {
-      text-align: center;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kabeer goofy</title>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+  }
+  .play-btn {
+    padding: 1.5rem 3rem;
+    font-size: 2rem;
+    color: #fff;
+    background: #1a1a1a;
+    border: 2px solid #fff;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  .play-btn:hover {
+    background: #fff;
+    color: #000;
+  }
+</style>
 </head>
 <body>
 
-<h1><span class="s1"><b>© 2025, EPIC CHEESE YVL</b></span><span class="s2"></span></h1>
+<button class="play-btn" id="playBtn">PLAY</button>
 
+<iframe id="ytPlayer" width="0" height="0" src="" allow="autoplay"></iframe>
+
+<script>
+const links = [
+  "https://www.youtube.com/embed/ynecLJYrZaA?autoplay=1",
+  "https://www.youtube.com/embed/YG3EhWlBaoI?autoplay=1",
+  "https://www.youtube.com/embed/ftaXMKV3ffE?autoplay=1",
+  "https://www.youtube.com/embed/VcRc2DHHhoM?autoplay=1",
+  "https://www.youtube.com/embed/F6iYcXynA4s?autoplay=1",
+  "https://www.youtube.com/embed/RLYksQvr5zY?autoplay=1",
+  "https://www.youtube.com/embed/JRK_in-dkRY?autoplay=1",
+  "https://www.youtube.com/embed/6jRQTj_k-1Q?autoplay=1",
+  "https://www.youtube.com/embed/QTLqujvTGrg?autoplay=1",
+  "https://www.youtube.com/embed/Q_ad3KnUDvM?autoplay=1"
+];
+
+// pick a random video on page load
+const randomIndex = Math.floor(Math.random() * links.length);
+
+const playBtn = document.getElementById("playBtn");
+playBtn.addEventListener("click", () => {
+  playBtn.disabled = true; // disable button so user can't click again
+  playBtn.innerText = "PLAYING...";
+  document.getElementById("ytPlayer").src = links[randomIndex];
+});
+</script>
 
 </body>
 </html>
