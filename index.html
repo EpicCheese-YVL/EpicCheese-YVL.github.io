@@ -15,30 +15,6 @@
     justify-content: center;
     align-items: center;
     padding: 10px;
-    box-sizing: border-box;
-    color: #fff;
-  }
-
-  #nowPlaying {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-
-  #progressContainer {
-    width: 80%;
-    background: #222;
-    border-radius: 10px;
-    overflow: hidden;
-    height: 12px;
-    margin-bottom: 20px;
-  }
-
-  #progressBar {
-    width: 0%;
-    height: 100%;
-    background: #ff00ff;
-    transition: width 0.1s linear;
   }
 
   .btn-container {
@@ -50,7 +26,7 @@
   }
 
   .btn {
-    padding: 1rem 2rem;
+    padding: 1rem 0;
     font-size: 1.5rem;
     color: #fff;
     background: #1a1a1a;
@@ -58,10 +34,11 @@
     cursor: pointer;
     border-radius: 8px;
     transition: all 0.3s ease;
-    box-shadow: 0 0 8px #fff;
+    box-shadow: 0 0 10px #fff;
     animation: pulse 2s infinite;
-    flex: 1 1 40%;
     text-align: center;
+    width: 140px;      /* fixed width for all buttons */
+    min-width: 140px;  /* ensures mobile consistency */
   }
 
   .btn:hover {
@@ -71,28 +48,29 @@
 
   @keyframes pulse {
     0% { box-shadow: 0 0 5px #fff; }
-    50% { box-shadow: 0 0 15px #ff00ff; }
+    50% { box-shadow: 0 0 20px #ff00ff; }
     100% { box-shadow: 0 0 5px #fff; }
   }
 
+  /* Keep iframe off-screen but playable */
   #ytPlayer {
     position: absolute;
     left: -9999px;
   }
 
-  @media(max-width: 480px){
-    #nowPlaying { font-size: 1.2rem; }
-    .btn { font-size: 1.2rem; padding: 0.8rem 1.5rem; flex: 1 1 100%; }
-    #progressContainer { width: 90%; height: 10px; }
+  /* Mobile adjustments */
+  @media(max-width: 480px) {
+    .btn {
+      width: 100px;
+      min-width: 100px;
+      font-size: 1.2rem;
+      padding: 0.8rem 0;
+    }
   }
+
 </style>
 </head>
 <body>
-
-<div id="nowPlaying">Now Playing: -</div>
-<div id="progressContainer">
-  <div id="progressBar"></div>
-</div>
 
 <div class="btn-container">
   <button class="btn" id="pauseBtn">PAUSE</button>
@@ -102,104 +80,80 @@
 
 <iframe id="ytPlayer" width="560" height="315" allow="autoplay; encrypted-media"></iframe>
 
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 const links = [
-  { id: "Av4AsFPeQ9E", name: "Let's Do It" },
-  { id: "Q_ad3KnUDvM", name: "CHARGE DEM **** A FEE" },
-  { id: "eO818K0C14A", name: "Unlock it" },
-  { id: "R2-yomhYAj4", name: "Gnarly" },
-  { id: "JRK_in-dkRY", name: "Stop Breathing" },
-  { id: "bYg6aMDQ_TA", name: "Debut" },
-  { id: "4H7ZJQPPThY", name: "M.I.A" },
-  { id: "42wfEs7oIP8", name: "FaSHioN" },
-  { id: "_VRyoaNF9sk", name: "Franchise" },
-  { id: "GYE9H4SMq5E", name: "Sky" }
+  "https://www.youtube.com/embed/Av4AsFPeQ9E?enablejsapi=1",
+  "https://www.youtube.com/embed/Q_ad3KnUDvM?enablejsapi=1",
+  "https://www.youtube.com/embed/eO818K0C14A?enablejsapi=1",
+  "https://www.youtube.com/embed/R2-yomhYAj4?enablejsapi=1",
+  "https://www.youtube.com/embed/JRK_in-dkRY?enablejsapi=1",
+  "https://www.youtube.com/embed/bYg6aMDQ_TA?enablejsapi=1",
+  "https://www.youtube.com/embed/4H7ZJQPPThY?enablejsapi=1",
+  "https://www.youtube.com/embed/42wfEs7oIP8?enablejsapi=1",
+  "https://www.youtube.com/embed/_VRyoaNF9sk?enablejsapi=1",
+  "https://www.youtube.com/embed/GYE9H4SMq5E?enablejsapi=1"
 ];
 
 let currentIndex = Math.floor(Math.random() * links.length);
-let player;
-
-const nowPlaying = document.getElementById("nowPlaying");
-const progressBar = document.getElementById("progressBar");
+const player = document.getElementById("ytPlayer");
 const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const nextBtn = document.getElementById("nextBtn");
 
 let isPlaying = false;
-let progressInterval;
 
-// YouTube IFrame API requires this global function
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('ytPlayer', {
-    videoId: links[currentIndex].id,
-    playerVars: { 'autoplay': 0, 'enablejsapi': 1, 'rel': 0 },
-    events: {
-      'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
-    }
-  });
-  updateNowPlaying();
+// Load initial random video
+player.src = links[currentIndex] + "&enablejsapi=1&autoplay=0";
+
+// Function to play a video
+function playVideo() {
+  player.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  isPlaying = true;
+  playBtn.innerText = "RESUME";
 }
 
-function onPlayerReady(event) {
-  // ready
+// Function to pause a video
+function pauseVideo() {
+  player.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  isPlaying = false;
 }
 
-function onPlayerStateChange(event) {
-  if(event.data === YT.PlayerState.ENDED){
-    playNext();
-  } else if(event.data === YT.PlayerState.PLAYING){
-    startProgress();
-  } else if(event.data === YT.PlayerState.PAUSED){
-    stopProgress();
-  }
-}
-
-function updateNowPlaying() {
-  nowPlaying.innerText = "Now Playing: " + links[currentIndex].name;
-}
-
-function startProgress() {
-  stopProgress();
-  progressInterval = setInterval(() => {
-    if(player && player.getDuration){
-      const progress = (player.getCurrentTime() / player.getDuration()) * 100;
-      progressBar.style.width = progress + "%";
-    }
-  }, 200);
-}
-
-function stopProgress() {
-  clearInterval(progressInterval);
-}
-
-function playNext(){
+// Function to go to a new random video
+function nextVideo() {
   let newIndex;
   do {
     newIndex = Math.floor(Math.random() * links.length);
   } while(newIndex === currentIndex);
   currentIndex = newIndex;
-  player.loadVideoById(links[currentIndex].id);
-  updateNowPlaying();
+  player.src = links[currentIndex] + "&enablejsapi=1&autoplay=1";
   isPlaying = true;
   playBtn.innerText = "RESUME";
 }
 
+// PLAY / RESUME button
 playBtn.addEventListener("click", () => {
-  player.unMute();       // unmute to allow sound
-  player.playVideo();
-  isPlaying = true;
-  playBtn.innerText = "RESUME";
+  playVideo();
 });
 
+// PAUSE button
 pauseBtn.addEventListener("click", () => {
-  if(isPlaying){
-    player.pauseVideo();
-  }
+  pauseVideo();
 });
 
-nextBtn.addEventListener("click", playNext);
+// NEXT button
+nextBtn.addEventListener("click", () => {
+  nextVideo();
+});
+
+// Auto play next video when current ends
+window.addEventListener('message', (e) => {
+  try {
+    const data = JSON.parse(e.data);
+    if (data.event === 'onStateChange' && data.info === 0) { // 0 = ended
+      nextVideo();
+    }
+  } catch(err) {}
+});
 </script>
 
 </body>
