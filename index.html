@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carti Random Player</title>
+<title>kabeer goofy</title>
 <style>
   html, body {
     height: 100%;
@@ -25,10 +25,17 @@
     border-radius: 8px;
     margin: 10px;
     transition: all 0.3s ease;
+    box-shadow: 0 0 10px #fff;
+    animation: pulse 2s infinite;
   }
   .btn:hover {
     background: #fff;
     color: #000;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 5px #fff; }
+    50% { box-shadow: 0 0 20px #ff00ff; }
+    100% { box-shadow: 0 0 5px #fff; }
   }
   /* Keep iframe off-screen but playable */
   #ytPlayer {
@@ -41,6 +48,7 @@
 
 <button class="btn" id="playBtn">PLAY</button>
 <button class="btn" id="pauseBtn">PAUSE</button>
+<button class="btn" id="nextBtn">NEXT</button>
 
 <iframe id="ytPlayer" width="560" height="315" allow="autoplay; encrypted-media"></iframe>
 
@@ -58,17 +66,16 @@ const links = [
   "https://www.youtube.com/embed/GYE9H4SMq5E?enablejsapi=1"
 ];
 
-// Random video index on load
-const randomIndex = Math.floor(Math.random() * links.length);
-
+let currentIndex = Math.floor(Math.random() * links.length);
 const player = document.getElementById("ytPlayer");
 const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
+const nextBtn = document.getElementById("nextBtn");
 
 let isPlaying = false;
 
-// Load the random video initially
-player.src = links[randomIndex];
+// Load the initial random video
+player.src = links[currentIndex];
 
 // PLAY / RESUME button
 playBtn.addEventListener("click", () => {
@@ -86,6 +93,19 @@ pauseBtn.addEventListener("click", () => {
   if (isPlaying) {
     player.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
   }
+});
+
+// NEXT button
+nextBtn.addEventListener("click", () => {
+  let newIndex;
+  do {
+    newIndex = Math.floor(Math.random() * links.length);
+  } while(newIndex === currentIndex); // ensure a different video
+  currentIndex = newIndex;
+  player.src = links[currentIndex];
+  player.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  isPlaying = true;
+  playBtn.innerText = "RESUME";
 });
 </script>
 
