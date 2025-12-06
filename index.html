@@ -9,47 +9,90 @@
     height: 100%;
     margin: 0;
     background: #000;
+    font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-family: Arial, sans-serif;
+    padding: 10px;
+    box-sizing: border-box;
+    color: #fff;
   }
+
+  #nowPlaying {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  #progressContainer {
+    width: 80%;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 12px;
+    margin-bottom: 20px;
+  }
+
+  #progressBar {
+    width: 0%;
+    height: 100%;
+    background: #ff00ff;
+    transition: width 0.1s linear;
+  }
+
+  .btn-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
   .btn {
-    padding: 1.5rem 3rem;
-    font-size: 2rem;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
     color: #fff;
     background: #1a1a1a;
     border: 2px solid #fff;
     cursor: pointer;
     border-radius: 8px;
-    margin: 10px;
     transition: all 0.3s ease;
-    box-shadow: 0 0 10px #fff;
+    box-shadow: 0 0 8px #fff;
     animation: pulse 2s infinite;
+    flex: 1 1 40%;
+    text-align: center;
   }
+
   .btn:hover {
     background: #fff;
     color: #000;
   }
+
   @keyframes pulse {
     0% { box-shadow: 0 0 5px #fff; }
-    50% { box-shadow: 0 0 20px #ff00ff; }
+    50% { box-shadow: 0 0 15px #ff00ff; }
     100% { box-shadow: 0 0 5px #fff; }
   }
-  /* Keep iframe off-screen but playable */
+
   #ytPlayer {
     position: absolute;
     left: -9999px;
   }
-  .btn-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+  @media(max-width: 480px){
+    #nowPlaying { font-size: 1.2rem; }
+    .btn { font-size: 1.2rem; padding: 0.8rem 1.5rem; flex: 1 1 100%; }
+    #progressContainer { width: 90%; height: 10px; }
   }
 </style>
 </head>
 <body>
+
+<div id="nowPlaying">Now Playing: -</div>
+<div id="progressContainer">
+  <div id="progressBar"></div>
+</div>
 
 <div class="btn-container">
   <button class="btn" id="pauseBtn">PAUSE</button>
@@ -59,61 +102,107 @@
 
 <iframe id="ytPlayer" width="560" height="315" allow="autoplay; encrypted-media"></iframe>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 const links = [
-  "https://www.youtube.com/embed/Av4AsFPeQ9E?enablejsapi=1",
-  "https://www.youtube.com/embed/Q_ad3KnUDvM?enablejsapi=1",
-  "https://www.youtube.com/embed/eO818K0C14A?enablejsapi=1",
-  "https://www.youtube.com/embed/R2-yomhYAj4?enablejsapi=1",
-  "https://www.youtube.com/embed/JRK_in-dkRY?enablejsapi=1",
-  "https://www.youtube.com/embed/bYg6aMDQ_TA?enablejsapi=1",
-  "https://www.youtube.com/embed/4H7ZJQPPThY?enablejsapi=1",
-  "https://www.youtube.com/embed/42wfEs7oIP8?enablejsapi=1",
-  "https://www.youtube.com/embed/_VRyoaNF9sk?enablejsapi=1",
-  "https://www.youtube.com/embed/GYE9H4SMq5E?enablejsapi=1"
+  { id: "Av4AsFPeQ9E", name: "Let's Do It" },
+  { id: "Q_ad3KnUDvM", name: "CHARGE DEM **** A FEE" },
+  { id: "eO818K0C14A", name: "Unlock it" },
+  { id: "R2-yomhYAj4", name: "Gnarly" },
+  { id: "JRK_in-dkRY", name: "Stop Breathing" },
+  { id: "bYg6aMDQ_TA", name: "Debut" },
+  { id: "4H7ZJQPPThY", name: "M.I.A" },
+  { id: "42wfEs7oIP8", name: "FaSHioN" },
+  { id: "_VRyoaNF9sk", name: "Franchise" },
+  { id: "GYE9H4SMq5E", name: "Sky" }
 ];
 
 let currentIndex = Math.floor(Math.random() * links.length);
-const player = document.getElementById("ytPlayer");
+let player;
+
+const nowPlaying = document.getElementById("nowPlaying");
+const progressBar = document.getElementById("progressBar");
 const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const nextBtn = document.getElementById("nextBtn");
 
 let isPlaying = false;
+let progressInterval;
 
-// Load the initial random video
-player.src = links[currentIndex];
+// YouTube IFrame API requires this global function
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('ytPlayer', {
+    videoId: links[currentIndex].id,
+    playerVars: { 'autoplay': 0, 'enablejsapi': 1 },
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
+  updateNowPlaying();
+}
 
-// PLAY / RESUME button
-playBtn.addEventListener("click", () => {
-  if (!isPlaying) {
-    player.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-    isPlaying = true;
-    playBtn.innerText = "RESUME";
-  } else {
-    player.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+function onPlayerReady(event) {
+  // ready
+}
+
+function onPlayerStateChange(event) {
+  if(event.data === YT.PlayerState.ENDED){
+    playNext();
+  } else if(event.data === YT.PlayerState.PLAYING){
+    startProgress();
+  } else if(event.data === YT.PlayerState.PAUSED){
+    stopProgress();
   }
-});
+}
 
-// PAUSE button
-pauseBtn.addEventListener("click", () => {
-  if (isPlaying) {
-    player.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-  }
-});
+function updateNowPlaying() {
+  nowPlaying.innerText = "Now Playing: " + links[currentIndex].name;
+}
 
-// NEXT button
-nextBtn.addEventListener("click", () => {
+function startProgress() {
+  stopProgress(); // clear any previous interval
+  progressInterval = setInterval(() => {
+    if(player && player.getDuration){
+      const progress = (player.getCurrentTime() / player.getDuration()) * 100;
+      progressBar.style.width = progress + "%";
+    }
+  }, 200);
+}
+
+function stopProgress() {
+  clearInterval(progressInterval);
+}
+
+function playNext(){
   let newIndex;
   do {
     newIndex = Math.floor(Math.random() * links.length);
-  } while(newIndex === currentIndex); // ensure a different video
+  } while(newIndex === currentIndex);
   currentIndex = newIndex;
-  player.src = links[currentIndex];
-  player.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  player.loadVideoById(links[currentIndex].id);
+  updateNowPlaying();
   isPlaying = true;
   playBtn.innerText = "RESUME";
+}
+
+playBtn.addEventListener("click", () => {
+  if(!isPlaying){
+    player.playVideo();
+    isPlaying = true;
+    playBtn.innerText = "RESUME";
+  } else {
+    player.playVideo();
+  }
 });
+
+pauseBtn.addEventListener("click", () => {
+  if(isPlaying){
+    player.pauseVideo();
+  }
+});
+
+nextBtn.addEventListener("click", playNext);
 </script>
 
 </body>
