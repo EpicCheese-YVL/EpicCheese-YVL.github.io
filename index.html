@@ -42,13 +42,20 @@
     position: absolute;
     left: -9999px;
   }
+  .btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 </style>
 </head>
 <body>
 
-<button class="btn" id="playBtn">PLAY</button>
-<button class="btn" id="pauseBtn">PAUSE</button>
-<button class="btn" id="nextBtn">NEXT</button>
+<div class="btn-container">
+  <button class="btn" id="pauseBtn">PAUSE</button>
+  <button class="btn" id="playBtn">PLAY</button>
+  <button class="btn" id="nextBtn">NEXT</button>
+</div>
 
 <iframe id="ytPlayer" width="560" height="315" allow="autoplay; encrypted-media"></iframe>
 
