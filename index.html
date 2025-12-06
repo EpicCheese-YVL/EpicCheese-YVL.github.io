@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>kabeer goofy</title>
+
 <style>
   html, body {
     height: 100%;
@@ -11,7 +12,6 @@
     background: #000;
     font-family: Arial, sans-serif;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 10px;
@@ -19,26 +19,24 @@
 
   .btn-container {
     display: flex;
+    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
   }
 
   .btn {
+    width: 140px;
     padding: 1rem 0;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: #fff;
     background: #1a1a1a;
     border: 2px solid #fff;
-    cursor: pointer;
     border-radius: 8px;
-    transition: all 0.3s ease;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
     box-shadow: 0 0 10px #fff;
     animation: pulse 2s infinite;
-    text-align: center;
-    width: 140px;      /* fixed width for all buttons */
-    min-width: 140px;  /* ensures mobile consistency */
   }
 
   .btn:hover {
@@ -48,28 +46,24 @@
 
   @keyframes pulse {
     0% { box-shadow: 0 0 5px #fff; }
-    50% { box-shadow: 0 0 20px #ff00ff; }
+    50% { box-shadow: 0 0 18px #ff00ff; }
     100% { box-shadow: 0 0 5px #fff; }
   }
 
-  /* Keep iframe off-screen but playable */
+  @media (max-width: 480px) {
+    .btn {
+      width: 100px;
+      font-size: 1.1rem;
+    }
+  }
+
   #ytPlayer {
     position: absolute;
     left: -9999px;
   }
-
-  /* Mobile adjustments */
-  @media(max-width: 480px) {
-    .btn {
-      width: 100px;
-      min-width: 100px;
-      font-size: 1.2rem;
-      padding: 0.8rem 0;
-    }
-  }
-
 </style>
 </head>
+
 <body>
 
 <div class="btn-container">
@@ -78,7 +72,10 @@
   <button class="btn" id="nextBtn">NEXT</button>
 </div>
 
-<iframe id="ytPlayer" width="560" height="315" allow="autoplay; encrypted-media"></iframe>
+<iframe
+  id="ytPlayer"
+  allow="autoplay; encrypted-media">
+</iframe>
 
 <script>
 const links = [
@@ -95,64 +92,72 @@ const links = [
 ];
 
 let currentIndex = Math.floor(Math.random() * links.length);
+let isPlaying = false;
+
 const player = document.getElementById("ytPlayer");
 const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const nextBtn = document.getElementById("nextBtn");
 
-let isPlaying = false;
+// Load first random song
+player.src = links[currentIndex] + "&autoplay=0";
 
-// Load initial random video
-player.src = links[currentIndex] + "&enablejsapi=1&autoplay=0";
-
-// Function to play a video
+// Core controls
 function playVideo() {
-  player.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  player.contentWindow.postMessage(
+    '{"event":"command","func":"playVideo","args":""}', '*'
+  );
   isPlaying = true;
   playBtn.innerText = "RESUME";
 }
 
-// Function to pause a video
 function pauseVideo() {
-  player.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  player.contentWindow.postMessage(
+    '{"event":"command","func":"pauseVideo","args":""}', '*'
+  );
   isPlaying = false;
 }
 
-// Function to go to a new random video
 function nextVideo() {
   let newIndex;
   do {
     newIndex = Math.floor(Math.random() * links.length);
-  } while(newIndex === currentIndex);
+  } while (newIndex === currentIndex);
+
   currentIndex = newIndex;
-  player.src = links[currentIndex] + "&enablejsapi=1&autoplay=1";
+  player.src = links[currentIndex] + "&autoplay=1";
   isPlaying = true;
   playBtn.innerText = "RESUME";
 }
 
-// PLAY / RESUME button
-playBtn.addEventListener("click", () => {
-  playVideo();
+// Button events
+playBtn.onclick = playVideo;
+pauseBtn.onclick = pauseVideo;
+nextBtn.onclick = nextVideo;
+
+// Keyboard bindings
+document.addEventListener("keydown", (e) => {
+  // Play / Pause
+  if (["Space", "F8"].includes(e.code)) {
+    e.preventDefault();
+    isPlaying ? pauseVideo() : playVideo();
+  }
+
+  // Next
+  if (["ArrowRight", "F9"].includes(e.code)) {
+    e.preventDefault();
+    nextVideo();
+  }
 });
 
-// PAUSE button
-pauseBtn.addEventListener("click", () => {
-  pauseVideo();
-});
-
-// NEXT button
-nextBtn.addEventListener("click", () => {
-  nextVideo();
-});
-
-// Auto play next video when current ends
-window.addEventListener('message', (e) => {
+// Auto-play next when video ends
+window.addEventListener("message", (e) => {
   try {
     const data = JSON.parse(e.data);
-    if (data.event === 'onStateChange' && data.info === 0) { // 0 = ended
+    if (data.event === "onStateChange" && data.info === 0) {
       nextVideo();
     }
-  } catch(err) {}
+  } catch {}
 });
 </script>
 
