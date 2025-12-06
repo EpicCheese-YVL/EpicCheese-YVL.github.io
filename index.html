@@ -133,7 +133,7 @@ let progressInterval;
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('ytPlayer', {
     videoId: links[currentIndex].id,
-    playerVars: { 'autoplay': 0, 'enablejsapi': 1 },
+    playerVars: { 'autoplay': 0, 'enablejsapi': 1, 'rel': 0 },
     events: {
       'onReady': onPlayerReady,
       'onStateChange': onPlayerStateChange
@@ -161,7 +161,7 @@ function updateNowPlaying() {
 }
 
 function startProgress() {
-  stopProgress(); // clear any previous interval
+  stopProgress();
   progressInterval = setInterval(() => {
     if(player && player.getDuration){
       const progress = (player.getCurrentTime() / player.getDuration()) * 100;
@@ -187,13 +187,10 @@ function playNext(){
 }
 
 playBtn.addEventListener("click", () => {
-  if(!isPlaying){
-    player.playVideo();
-    isPlaying = true;
-    playBtn.innerText = "RESUME";
-  } else {
-    player.playVideo();
-  }
+  player.unMute();       // unmute to allow sound
+  player.playVideo();
+  isPlaying = true;
+  playBtn.innerText = "RESUME";
 });
 
 pauseBtn.addEventListener("click", () => {
