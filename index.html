@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carti Random Player</title>
+<title>kabeer goofy</title>
 
 <style>
-/* ===== NO SCROLL, LOCK VIEWPORT ===== */
+/* ===== LOCK PAGE (NO SCROLL EVER) ===== */
 html, body {
   width: 100%;
   height: 100%;
@@ -19,7 +19,7 @@ html, body {
   align-items: center;
 }
 
-/* ===== BUTTON CONTAINER ===== */
+/* ===== BUTTON LAYOUT ===== */
 .btn-container {
   display: flex;
   gap: 12px;
@@ -46,14 +46,14 @@ html, body {
   color: #000;
 }
 
-/* ===== GLOW ===== */
+/* ===== GLOW ANIMATION ===== */
 @keyframes pulse {
-  0%   { box-shadow: 0 0 6px #fff; }
-  50%  { box-shadow: 0 0 18px #ff00ff; }
+  0% { box-shadow: 0 0 6px #fff; }
+  50% { box-shadow: 0 0 18px #ff00ff; }
   100% { box-shadow: 0 0 6px #fff; }
 }
 
-/* ===== MOBILE ===== */
+/* ===== MOBILE TWEAKS ===== */
 @media (max-width: 480px) {
   .btn {
     width: 105px;
@@ -62,7 +62,7 @@ html, body {
   }
 }
 
-/* ===== HIDDEN PLAYER (AUDIO ONLY) ===== */
+/* ===== HIDDEN PLAYER ===== */
 #ytPlayer {
   position: absolute;
   left: -9999px;
@@ -82,22 +82,22 @@ html, body {
   id="ytPlayer"
   width="560"
   height="315"
-  allow="autoplay; encrypted-media">
-</iframe>
+  allow="autoplay; encrypted-media"
+></iframe>
 
 <script>
-/* ===== YOUTUBE-NOCOOKIE LINKS ===== */
+/* ===== YOUR CARTI LINKS ===== */
 const links = [
-  "https://www.youtube-nocookie.com/embed/Av4AsFPeQ9E?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/Q_ad3KnUDvM?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/eO818K0C14A?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/R2-yomhYAj4?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/JRK_in-dkRY?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/bYg6aMDQ_TA?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/4H7ZJQPPThY?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/42wfEs7oIP8?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/_VRyoaNF9sk?enablejsapi=1&rel=0&modestbranding=1",
-  "https://www.youtube-nocookie.com/embed/GYE9H4SMq5E?enablejsapi=1&rel=0&modestbranding=1"
+  "https://www.youtube.com/embed/Av4AsFPeQ9E?enablejsapi=1",
+  "https://www.youtube.com/embed/Q_ad3KnUDvM?enablejsapi=1",
+  "https://www.youtube.com/embed/eO818K0C14A?enablejsapi=1",
+  "https://www.youtube.com/embed/R2-yomhYAj4?enablejsapi=1",
+  "https://www.youtube.com/embed/JRK_in-dkRY?enablejsapi=1",
+  "https://www.youtube.com/embed/bYg6aMDQ_TA?enablejsapi=1",
+  "https://www.youtube.com/embed/4H7ZJQPPThY?enablejsapi=1",
+  "https://www.youtube.com/embed/42wfEs7oIP8?enablejsapi=1",
+  "https://www.youtube.com/embed/_VRyoaNF9sk?enablejsapi=1",
+  "https://www.youtube.com/embed/GYE9H4SMq5E?enablejsapi=1"
 ];
 
 let currentIndex = Math.floor(Math.random() * links.length);
@@ -141,12 +141,12 @@ function nextVideo() {
   playBtn.innerText = "RESUME";
 }
 
-/* ===== EVENTS ===== */
+/* ===== BUTTON EVENTS ===== */
 playBtn.onclick = playVideo;
 pauseBtn.onclick = pauseVideo;
 nextBtn.onclick = nextVideo;
 
-/* ===== AUTO-PLAY NEXT WHEN ENDS ===== */
+/* ===== AUTO NEXT WHEN SONG ENDS ===== */
 window.addEventListener("message", e => {
   try {
     const data = JSON.parse(e.data);
